@@ -1,0 +1,28 @@
+[project]
+name = "Unknown6656.CVGLPixelShader"
+version = "1.0.0"
+authors = [
+  { name="Unknown6656", email="unknown6656.com" },
+]
+description = "A small package wich enables the modification of OpenCV or NumPy images using OpenGL pixel shaders written in GLSL."
+readme = "README.md"
+license = { file="LICENSE" }
+requires-python = ">=3.10"
+classifiers = [
+    "Programming Language :: Python :: 3.10"
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Environment :: GPU :: NVIDIA CUDA :: 5.0",
+    "License :: OSI Approved :: GNU Affero General Public License v3 or later (AGPLv3+)",
+    "Topic :: Multimedia :: Graphics",
+]
+
+[project.urls]
+"Homepage" = "https://github.com/pypa/sampleproject"
+"Bug Tracker" = "https://github.com/pypa/sampleproject/issues"
+
+
+
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
