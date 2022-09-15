@@ -2,7 +2,7 @@ from dataclasses import dataclass
 from threading import Lock, get_ident
 from typing import ClassVar
 from enum import Enum
-from ctypes import *
+from ctypes import POINTER, c_void_p
 
 import numpy as np
 import cv2
