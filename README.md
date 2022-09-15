@@ -6,8 +6,8 @@ This is a small package wich enables the modification of OpenCV or NumPy images 
 2. Insert the following import statements into your Python code:
    ```python
    from Unknown6656.CVGLPixelShader import *
-   import cv2
    ```
+   This statement _should_ also import any dependencies on which `Unknown6656.CVGLPixelShader` relies upon, e.g. `cv2`.<br/>If you run into any issues, try installing all dependencies as listed in [requirements.txt](requirements.txt).
 
 ### Basic Example
 Create a new shader by invoking the constructor `PixelShader(...)` as follows:
