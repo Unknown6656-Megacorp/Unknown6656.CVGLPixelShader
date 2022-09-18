@@ -1,8 +1,6 @@
-from dataclasses import dataclass
-from threading import Lock, get_ident
-from typing import ClassVar
-from enum import Enum
 from ctypes import POINTER, c_void_p
+from typing import ClassVar
+from threading import Lock
 
 import numpy as np
 import cv2
@@ -11,115 +9,51 @@ import OpenGL.GL as gl
 import OpenGL.GL.shaders as gls
 import glfw
 
+from .shader_variable import *
 
-_VAR_CODE = '%__CODE__%'
-_VAR_UNIFORMS = '%__UNIFORMS__%'
-_VAR_ADD_FUNCTIONS = '%__FUNCTIONS__%'
-_VERTEX_SHADER = """
-#version 450
-
-in vec2 position;
-out vec2 coords;
-
-void main() {
-    gl_Position = vec4(position, 0.0, 1.0);
-    coords = (1.0 + position) * 0.5;
-}
-"""
-_FRAGMENT_SHADER = f"""
-#version 450
-
-in vec2 coords;
-layout (location = 0) out vec4 out_color;
-
-layout (location = 1) uniform int width;
-layout (location = 2) uniform int height;
-{_VAR_UNIFORMS}
-layout (binding = 0) uniform sampler2D image;
-
-{_VAR_ADD_FUNCTIONS}
-void main() {{
-    vec2 scales = vec2(width, height) * 0.2;
-    out_color = texture(image, coords);
-
-    {_VAR_CODE}
-}}
-"""
-
-
-
-class ShaderVariableType(Enum):
-    '''An enumeration of possible shader variable data types. These include bool, int, ivec2, ivec3,
-    ivec4, float, vec2, vec3, and vec4. Shader variables are used to pass values from Python to GLSL.
-
-    Enumeration Fields
-    ------------------
-    BOOL : 0
-        Represents a boolean variable (32bit). GLSL equivalent: int or bool.
-    INT : 1
-        Represents a 32-bit (4 byte) signed integer variable. GLSL equivalent: int.
-    INT_2 : 2
-        Represents a 8 byte large tuple of two 32-bit signed integer variables. GLSL equivalent: ivec2.
-    INT_3 : 3
-        Represents a 12 byte large tuple of three 32-bit signed integer variables. GLSL equivalent: ivec3.
-    INT_4 : 4
-        Represents a 16 byte large tuple of four 32-bit signed integer variables. GLSL equivalent: ivec4.
-    FLOAT : 11
-        Represents a 32-bit (4 byte) signed floating-point variable. GLSL equivalent: signed.
-    FLOAT_2 : 12
-        Represents a 8 byte large tuple of two 32-bit signed floating-point variables. GLSL equivalent: vec2.
-    FLOAT_3 : 13
-        Represents a 12 byte large tuple of three 32-bit signed floating-point variables. GLSL equivalent: vec3.
-    FLOAT_4 : 14
-        Represents a 16 byte large tuple of four 32-bit signed floating-point variables. GLSL equivalent: vec4.
-    '''
-
-    BOOL = 0
-    INT = 1
-    INT_2 = 2
-    INT_3 = 3
-    INT_4 = 4
-    FLOAT = 11
-    FLOAT_2 = 12
-    FLOAT_3 = 13
-    FLOAT_4 = 14
-
-    def glsl_type(self) -> str:
-        '''Returns the GLSL type equivalent for the given shader variable type instance.'''
-        return {
-            ShaderVariableType.BOOL    : 'bool',
-            ShaderVariableType.INT     : 'int',
-            ShaderVariableType.INT_2   : 'ivec2',
-            ShaderVariableType.INT_3   : 'ivec3',
-            ShaderVariableType.INT_4   : 'ivec4',
-            ShaderVariableType.FLOAT   : 'float',
-            ShaderVariableType.FLOAT_2 : 'vec2',
-            ShaderVariableType.FLOAT_3 : 'vec3',
-            ShaderVariableType.FLOAT_4 : 'vec4',
-        }[self]
-
-@dataclass
-class ShaderVariable:
-    '''Represents a shader variable which is characterized by its name and shader variable type.
-
-    NOTE: Shader variable names are case-sensitive!'''
-    name : str
-    type : ShaderVariableType
-
-    def __repr__(self) -> str:
-        '''Returns the string representation of the shader variable, which equates to "<type> <name>".'''
-        return f'{self.type.name} {self.name}'
-
-    def __hash__(self) -> int:
-        '''Returns the hash value of the shader varialbe, which is determined by the hash value of the shader variable's name'''
-        return self.name.__hash__()
 
 class PixelShader:
     '''Represents a GLSL pixel shader. A pixel shader is a piece of OpenGL Shader Language code which, after having been compiled
     using the GLSL compiler, can be applied to any given OpenCV/NumPy image.'''
+
     __instances : ClassVar[int] = 0
     __mutex : ClassVar[Lock] = Lock()
     __window : ClassVar[POINTER(glfw._GLFWwindow) | None] = None
+    __VAR_CODE = '%__CODE__%'
+    __VAR_UNIFORMS = '%__UNIFORMS__%'
+    __VAR_ADD_FUNCTIONS = '%__FUNCTIONS__%'
+    __VERTEX_SHADER = """
+    #version 450
+
+    in vec2 position;
+    out vec2 coords;
+
+    void main() {
+        gl_Position = vec4(position, 0.0, 1.0);
+        coords = (1.0 + position) * 0.5;
+    }
+    """
+    __FRAGMENT_SHADER = f"""
+    #version 450
+
+    in vec2 coords;
+    layout (location = 0) out vec4 out_color;
+
+    layout (location = 1) uniform int width;
+    layout (location = 2) uniform int height;
+    {__VAR_UNIFORMS}
+    layout (binding = 0) uniform sampler2D image;
+
+    {__VAR_ADD_FUNCTIONS}
+    void main() {{
+        out_color = texture(image, coords);
+
+        {__VAR_CODE}
+
+        out_color = clamp(out_color, 0, 1);
+    }}
+    """
+
 
 
     def __init__(self, shader_code : str, additional_functions : str = '', variables : list[ShaderVariable] = []):
@@ -157,17 +91,17 @@ class PixelShader:
             glfw.make_context_current(PixelShader.__window)
 
             uniform_declarations = '\n'.join([f'layout (location = {i + 3}) uniform {x.type.glsl_type()} /* {x.type} */ {x.name};' for i,x in enumerate(variables)])
-            fragment_shader_code = _FRAGMENT_SHADER.replace(_VAR_CODE, shader_code) \
-                                                   .replace(_VAR_ADD_FUNCTIONS, additional_functions) \
-                                                   .replace(_VAR_UNIFORMS, uniform_declarations)
 
             self._vertex_shader = gl.glCreateShader(gl.GL_VERTEX_SHADER)
             self._fragment_shader = gl.glCreateShader(gl.GL_FRAGMENT_SHADER)
+            self._fragment_shader_code = PixelShader.__FRAGMENT_SHADER.replace(PixelShader.__VAR_CODE, shader_code) \
+                                                                      .replace(PixelShader.__VAR_ADD_FUNCTIONS, additional_functions) \
+                                                                      .replace(PixelShader.__VAR_UNIFORMS, uniform_declarations)
 
-            gl.glShaderSource(self._vertex_shader, [_VERTEX_SHADER])
+            gl.glShaderSource(self._vertex_shader, [PixelShader.__VERTEX_SHADER])
             gl.glCompileShader(self._vertex_shader)
 
-            gl.glShaderSource(self._fragment_shader, [fragment_shader_code])
+            gl.glShaderSource(self._fragment_shader, [self._fragment_shader_code])
             gl.glCompileShader(self._fragment_shader)
 
             if not gl.glGetShaderiv(self._fragment_shader, gl.GL_COMPILE_STATUS):
@@ -219,7 +153,7 @@ class PixelShader:
             gl.glTexParameteri(gl.GL_TEXTURE_2D, gl.GL_TEXTURE_MAG_FILTER, gl.GL_NEAREST)
             gl.glTexParameteri(gl.GL_TEXTURE_2D, gl.GL_TEXTURE_MIN_FILTER, gl.GL_NEAREST)
 
-            self._variables = {var : None for var in variables}
+            self._variables = {var : var.default_value for var in variables}
         finally:
             PixelShader.__mutex.release()
 
