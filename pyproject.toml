@@ -16,11 +16,20 @@ classifiers = [
     "License :: OSI Approved :: GNU Affero General Public License v3 or later (AGPLv3+)",
     "Topic :: Multimedia :: Graphics",
 ]
+dependencies = [
+    "glfw >= 2.5.5",
+    "numpy >= 1.22.2",
+    "opencv_python >= 4.5.5.62",
+    "PyOpenGL >= 3.1.6",
+    "setuptools >= 58.1.0",
+]
 
 [project.urls]
 "Homepage" = "https://github.com/Unknown6656-Megacorp/Unknown6656.CVGLPixelShader"
 "Bug Tracker" = "https://github.com/Unknown6656-Megacorp/Unknown6656.CVGLPixelShader/issues"
 
 [build-system]
-requires = ["setuptools>=61.0"]
+requires = [
+    "setuptools >= 61.0"
+]
 build-backend = "setuptools.build_meta"
