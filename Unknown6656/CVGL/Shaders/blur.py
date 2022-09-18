@@ -1,5 +1,4 @@
-from .. import *
-from ..shader_generator import _generate_shader_class
+from .. import ShaderVariable, ShaderVariableType, _generate_shader_class
 
 
 Blur = _generate_shader_class('''

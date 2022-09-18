@@ -1,5 +1,4 @@
 from . import *
-from .pixel_shader import PixelShader
 from .shader_variable import ShaderVariable
 
 
@@ -33,8 +32,9 @@ def __init(self{"".join([f", {v.name} = {v.default_value}" for v in variables])}
         '__call__': _apply,
         '__enter__': _enter,
         '__exit__': _exit,
+        '__doc__': lambda: 'A dynamically generated shader class which uses the following variables:' + "".join(["\n - " + str(v) for v in variables]),
         'apply': _apply,
-        'close': (lambda x: _exit(x, None, None, None)),
+        'close': lambda x: _exit(x, None, None, None),
     }
 
     for var in variables:
