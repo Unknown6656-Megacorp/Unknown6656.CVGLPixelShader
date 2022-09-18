@@ -17,7 +17,8 @@ You can learn more about GLSL, as well as pixel and fragment shaders here:
 
 
 ### Download / Installation
-1. Install the package using `pip install Unknown6656.CVGLPixelShader` or download it from https://pypi.org/project/Unknown6656.CVGLPixelShader/
+
+1. Install the package using `pip install Unknown6656.CVGLPixelShader` or download it from [https://pypi.org/project/Unknown6656.CVGLPixelShader/](https://pypi.org/project/Unknown6656.CVGLPixelShader/)
 2. Insert the following import statements into your Python code:
 
    ```python
