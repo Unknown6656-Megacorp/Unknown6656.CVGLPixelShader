@@ -12,6 +12,9 @@ import glfw
 from .shader_variable import *
 
 
+ENABLE_GLSL_LINE_NUMBER_CORRECTION = True
+
+
 class PixelShader:
     '''Represents a GLSL pixel shader. A pixel shader is a piece of OpenGL Shader Language code which, after having been compiled
     using the GLSL compiler, can be applied to any given OpenCV/NumPy image.'''
@@ -55,7 +58,6 @@ class PixelShader:
     """
 
 
-
     def __init__(self, shader_code : str, additional_functions : str = '', variables : list[ShaderVariable] = []):
         '''Creates a new pixel shader using the given GLSL shader code.
 
@@ -91,6 +93,9 @@ class PixelShader:
             glfw.make_context_current(PixelShader.__window)
 
             uniform_declarations = '\n'.join([f'layout (location = {i + 3}) uniform {x.type.glsl_type()} /* {x.type} */ {x.name};' for i,x in enumerate(variables)])
+
+            if ENABLE_GLSL_LINE_NUMBER_CORRECTION:
+                shader_code = '\n'.join([f'#line {i}\n{x}' for i,x in enumerate(shader_code.splitlines())])
 
             self._vertex_shader = gl.glCreateShader(gl.GL_VERTEX_SHADER)
             self._fragment_shader = gl.glCreateShader(gl.GL_FRAGMENT_SHADER)
@@ -312,3 +317,30 @@ class PixelShader:
 
     def __eq__(self, other) -> bool: return isinstance(other, PixelShader) and int(self._shader_program) == int(other._shader_program)
 
+    def __add__(self, other):
+        if not isinstance(other, PixelShader):
+            raise Exception(f'Concatenation is only permitted with two instances of "PixelShader".')
+
+        # add: __call__
+        # add: __setitem__
+        # add: __getitem__
+        # add: apply
+        # add: get_variable
+        # add: set_variable
+
+
+
+
+def apply_shader(shader : type | PixelShader, image : np.ndarray, **kwargs : float | int | np.int32 | np.float32 | list[float] | list[int] | list[np.float32] | list[np.int32] | np.ndarray | None) -> np.ndarray:
+    if shader == PixelShader:
+        raise Exception('Please call "PixelShader(...)" before passing it to the function "apply_shader".')
+    elif isinstance(shader, type):
+        shader = shader(**kwargs)
+
+    for key in kwargs:
+        shader[key] = kwargs[key]
+
+    image = shader(image)
+    shader.close()
+
+    return image
