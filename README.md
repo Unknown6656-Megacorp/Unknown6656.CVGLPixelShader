@@ -138,3 +138,15 @@ Please keep the following in mind:
 
 1. This library is still in beta. Some bugs may occur.
 2. You may declare multiple shaders and use them independently from each other. Please keep in mind that the image processing is still performed synchroniously in the background, meaning that two shaders cannot process an image at exactly the same time (at least on a per-process basis).
+3. **Performance:**<br/>
+  Let me be clear. The performance of this library is dogshite. Pixel shaders usually have a great performace, however they are designed to be used inside of render pipelines of games -- not headless in some random botched-up code. Hoever, I tried to compare the performance of this library with equivalent "traditional" code (i.e. using mainly OpenCV and NumPy).
+  The following graph compares the runtime (in seconds) of executing x-times the "vignetting" effect on a bitmap using this library and a traditional method:
+  ![](performance-comparison.png)
+  This graph has been created on a machine with the following hardware specifications:
+    ```text
+    LENOVO Legion 5
+    Intel i7-11800H @ 2.3Ghz, 8 Cores, 16 Threads
+    NVIDIA RTX 3060 M (6GB VRAM)
+    16GB RAM
+    ```
+   [TODO : insert more comparison graphs]
