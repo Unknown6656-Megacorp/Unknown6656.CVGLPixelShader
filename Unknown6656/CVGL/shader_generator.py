@@ -32,7 +32,11 @@ def __init(self{"".join([f", {v.name} = {v.default_value}" for v in variables])}
         '__call__': _apply,
         '__enter__': _enter,
         '__exit__': _exit,
+        '__getitem__': _get,
+        '__setitem__': _set,
         '__doc__': lambda: 'A dynamically generated shader class which uses the following variables:' + "".join(["\n - " + str(v) for v in variables]),
+        'get_variable': _get,
+        'set_variable': _set,
         'apply': _apply,
         'close': lambda x: _exit(x, None, None, None),
     }
