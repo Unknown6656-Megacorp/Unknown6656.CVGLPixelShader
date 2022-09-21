@@ -137,11 +137,11 @@ Let me be clear. The performance of this library is dogshite. Pixel shaders usua
 
 The following graph compares the runtime (in seconds) of executing x-times the "vignetting" effect on a bitmap using this library and a "traditional" method:
 
-![](performance-comparison-1.png)
+![](https://github.com/Unknown6656-Megacorp/Unknown6656.CVGLPixelShader/raw/main/performance-comparison-1.png)
 
 The following graph compares the mean runtime (in seconds) averaged over 100 iterations of the following effects using this library and "traditional" implementations:
 
-![](performance-comparison-2.png)
+![](https://github.com/Unknown6656-Megacorp/Unknown6656.CVGLPixelShader/raw/main/performance-comparison-2.png)
 
 Both graphs have been created on a machine with the following hardware specifications:
 
