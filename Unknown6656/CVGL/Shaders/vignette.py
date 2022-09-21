@@ -6,11 +6,7 @@ float vignette = smoothstep(radius, radius - softness, length(coords - .5));
 
 out_color.rgb = mix(
     out_color.rgb,
-    mix(
-        color,
-        out_color.rgb,
-        vignette
-    ),
+    mix(color, out_color.rgb, vignette),
     strength
 );
 ''', '', [

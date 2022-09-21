@@ -47,10 +47,10 @@ class PixelShader:
     {__VAR_UNIFORMS}
     layout (binding = 0) uniform sampler2D image;
 
+    const float TAU = 6.28318530718;
 
     vec4 blur(const vec2 coords, const float r, const float q)
     {{
-        const float TAU = 6.28318530718;
         float i_qual = 1.0 / q;
         vec4 color = texture2D(image, coords);
 
