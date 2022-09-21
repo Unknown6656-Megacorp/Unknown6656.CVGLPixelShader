@@ -7,9 +7,18 @@ Invert = _generate_shader_class('out_color = mix(out_color, 1 - out_color, stren
 
 
 Grayscale = _generate_shader_class('''
-out_color = mix(out_color, dot(out_color.rgb, vec3(0.299, 0.587, 0.114)), strength);
+const vec3 gray = vec3(dot(out_color.rgb, vec3(0.299, 0.587, 0.114)));
+out_color.rgb = mix(out_color.rgb, gray, clamp(strength, 0, 1));
 ''', '', [
     ShaderVariable('strength', ShaderVariableType.FLOAT, 1)
+])
+
+
+Saturation = _generate_shader_class('''
+const vec3 gray = vec3(dot(out_color.rgb, vec3(0.299, 0.587, 0.114)));
+out_color.rgb = mix(gray, out_color.rgb, clamp(saturation, 0, 1000000));
+''', '', [
+    ShaderVariable('saturation', ShaderVariableType.FLOAT, 1)
 ])
 
 
