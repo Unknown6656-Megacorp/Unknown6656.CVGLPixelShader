@@ -47,6 +47,44 @@ class PixelShader:
     {__VAR_UNIFORMS}
     layout (binding = 0) uniform sampler2D image;
 
+
+    vec4 blur(const vec2 coords, const float r, const float q)
+    {{
+        const float TAU = 6.28318530718;
+        float i_qual = 1.0 / q;
+        vec4 color = texture2D(image, coords);
+
+        for (float phi = 0.0; phi < TAU; phi += TAU * i_qual * i_qual)
+            for (float i = i_qual; i <= 1.0; i += i_qual)
+                color += texture2D(image, coords + vec2(cos(phi) / width, sin(phi) / height) * r * i);
+
+        return color * i_qual * i_qual * i_qual;
+    }}
+
+    vec3 rgb2hsv(const vec3 c)
+    {{
+        const vec4 K = vec4(0.0, -1.0 / 3.0, 2.0 / 3.0, -1.0);
+        const vec4 p = mix(vec4(c.bg, K.wz), vec4(c.gb, K.xy), step(c.b, c.g));
+        const vec4 q = mix(vec4(p.xyw, c.r), vec4(c.r, p.yzx), step(p.x, c.r));
+        const float d = q.x - min(q.w, q.y);
+        const float e = 1.0e-10;
+
+        return vec3(abs(q.z + (q.w - q.y) / (6.0 * d + e)), d / (q.x + e), q.x);
+    }}
+
+    vec3 hsv2rgb(const vec3 c)
+    {{
+        const vec4 K = vec4(1.0, 2.0 / 3.0, 1.0 / 3.0, 3.0);
+        const vec3 p = abs(fract(c.xxx + K.xyz) * 6.0 - K.www);
+
+        return c.z * mix(K.xxx, clamp(p - K.xxx, 0.0, 1.0), c.y);
+    }}
+
+    float ciegray(const vec3 c)
+    {{
+        return dot(c, vec3(0.299, 0.587, 0.114));
+    }}
+
     {__VAR_ADD_FUNCTIONS}
     void main() {{
         out_color = texture(image, coords);
