@@ -1,6 +1,7 @@
 [![](https://img.shields.io/github/issues/Unknown6656-Megacorp/Unknown6656.CVGLPixelShader)](https://github.com/Unknown6656-Megacorp/Unknown6656.CVGLPixelShader/issues)
 [![](https://img.shields.io/github/forks/Unknown6656-Megacorp/Unknown6656.CVGLPixelShader)](https://github.com/Unknown6656-Megacorp/Unknown6656.CVGLPixelShader/network)
 [![](https://img.shields.io/github/stars/Unknown6656-Megacorp/Unknown6656.CVGLPixelShader)](https://github.com/Unknown6656-Megacorp/Unknown6656.CVGLPixelShader)
+[![CodeFactor](https://www.codefactor.io/repository/github/unknown6656-megacorp/unknown6656.cvglpixelshader/badge)](https://www.codefactor.io/repository/github/unknown6656-megacorp/unknown6656.cvglpixelshader)
 [![](https://img.shields.io/github/downloads/Unknown6656-Megacorp/Unknown6656.CVGLPixelShader/total?label=GitHub%20downloads)](https://github.com/Unknown6656-Megacorp/Unknown6656.CVGLPixelShader/releases)
 [![](https://img.shields.io/pypi/dm/Unknown6656.CVGLPixelShader?label=PyPI%20downloads)](https://pypi.org/project/Unknown6656.CVGLPixelShader/)
 
